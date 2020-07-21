@@ -21,6 +21,7 @@ import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.security.interfaces.RSAPrivateKey;
 import java.security.spec.PKCS8EncodedKeySpec;
+
 import javax.net.ssl.KeyManager;
 import javax.net.ssl.KeyManagerFactory;
 import javax.net.ssl.SSLContext;
@@ -29,6 +30,7 @@ import javax.net.ssl.SSLSocketFactory;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.TrustManagerFactory;
 import javax.net.ssl.X509TrustManager;
+
 import totalcross.crypto.CryptoException;
 import totalcross.crypto.NoSuchAlgorithmException;
 import totalcross.io.IOException;
@@ -98,7 +100,7 @@ public class SSLCTX {
     this.num_sessions = num_sessions;
 
     try {
-      Security.addProvider(new com.sun.net.ssl.internal.ssl.Provider());
+      Security.addProvider(Security.getProvider("SunJSSE"));
       ctx_ssl = SSLContext.getInstance("TLS");
     } catch (java.security.NoSuchAlgorithmException e) {
       throw new NoSuchAlgorithmException(e.getMessage());

@@ -6,26 +6,36 @@
 
 package totalcross.ui.media;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.UnsupportedAudioFileException;
+
 import totalcross.Launcher;
 import totalcross.io.IOException;
 import totalcross.io.RandomAccessStream;
 import totalcross.ui.MainWindow;
 
 /**
- * MediaClip is a sound clip. It will be updated in the future to support movie clips.
+ * MediaClip is a sound clip. It will be updated in the future to support movie
+ * clips.
  * <p>
- * Support for sound clips varies between platforms. Some Java virtual machines support .wav and .au sound files and
- * some versions don't seem to support either format.
+ * Support for sound clips varies between platforms. Some Java virtual machines
+ * support .wav and .au sound files and some versions don't seem to support
+ * either format.
  * <p>
- * Using a TotalCross Virtual Machine, .wav format sound clips are supported under Win32, WinCE and Palm OS. Under Win32
- * and WinCE, the .wav files for sound clips may exist in a file outside of the program's tcz file; the wav file can be
- * stored inside a pdb/tcz file (and it has precedence over the one located in the file system).
+ * Using a TotalCross Virtual Machine, .wav format sound clips are supported
+ * under Win32, WinCE and Palm OS. Under Win32 and WinCE, the .wav files for
+ * sound clips may exist in a file outside of the program's tcz file; the wav
+ * file can be stored inside a pdb/tcz file (and it has precedence over the one
+ * located in the file system).
  * <p>
- * In Palm OS, the wav must be added to the pdb (The Deployer does this automagically. Just reference a .wav and it will
- * be added).
+ * In Palm OS, the wav must be added to the pdb (The Deployer does this
+ * automagically. Just reference a .wav and it will be added).
  * <p>
- * If you're playing a sound clip under a Windows CE device and you don't hear anything, make sure that the device is
- * set to allow programs to play sounds. To check the setting, look at:
+ * If you're playing a sound clip under a Windows CE device and you don't hear
+ * anything, make sure that the device is set to allow programs to play sounds.
+ * To check the setting, look at:
  * <p>
  * Start->Settings->Volume & Sounds
  * <p>
@@ -43,14 +53,16 @@ import totalcross.ui.MainWindow;
  * s.start();
  * </pre>
  * 
- * Under Palm OS, the currently supported formats are: uncompressed (PCM) or IMA 4-bit adaptive differential (IMA
- * ADPCM). The ADPCM type is also known as DVI ADPCM; in a WAVE file, it's known as format 0x11. One or two-channels;
- * All normal sampling rates (8k, 11k, 22.05k, 44.1k, 48, 96k).
+ * Under Palm OS, the currently supported formats are: uncompressed (PCM) or IMA
+ * 4-bit adaptive differential (IMA ADPCM). The ADPCM type is also known as DVI
+ * ADPCM; in a WAVE file, it's known as format 0x11. One or two-channels; All
+ * normal sampling rates (8k, 11k, 22.05k, 44.1k, 48, 96k).
  * <p>
- * Note that some Palm OS devices does not support 16bit waves, so better store them in 8bits.
+ * Note that some Palm OS devices does not support 16bit waves, so better store
+ * them in 8bits.
  * <p>
- * MediaClip also support sound recording. When recording sound, you can only call the record and stop methods. Sound
- * recording does not work under JavaSE.
+ * MediaClip also support sound recording. When recording sound, you can only
+ * call the record and stop methods. Sound recording does not work under JavaSE.
  * <p>
  * The MediaClip events are broadcasted to the MainWindow controls.
  */
@@ -61,13 +73,24 @@ public class MediaClip {
 
   static MainWindow mainWindow = MainWindow.getMainWindow();
 
-  /** The state of the MediaClip indicating that it has not acquired the required information and resources to function. */
+  /**
+   * The state of the MediaClip indicating that it has not acquired the required
+   * information and resources to function.
+   */
   public final static int UNREALIZED = 0;
-  /** The state of the MediaClip indicating that it has acquired the required information but not the resources to function. */
+  /**
+   * The state of the MediaClip indicating that it has acquired the required
+   * information but not the resources to function.
+   */
   public final static int REALIZED = 1;
-  /** The state of the MediaClip indicating that it has acquired all the resources to begin playing. */
+  /**
+   * The state of the MediaClip indicating that it has acquired all the resources
+   * to begin playing.
+   */
   public final static int PREFETCHED = 2;
-  /** The state of the MediaClip indicating that the MediaClip has already started. */
+  /**
+   * The state of the MediaClip indicating that the MediaClip has already started.
+   */
   public final static int STARTED = 3;
   /** The state of the MediaClip indicating that the MediaClip is closed. */
   public final static int CLOSED = 4;
@@ -82,20 +105,27 @@ public class MediaClip {
   public static final int HIGH = 44100;
 
   /**
-   * Create a MediaClip to play back or record a media from/to a RandomAccessStream. Currently the only media type
-   * supported is audio wave.<br>
-   * It's important to notice that you may not use the same object for play back and record.<br>
+   * Create a MediaClip to play back or record a media from/to a
+   * RandomAccessStream. Currently the only media type supported is audio
+   * wave.<br>
+   * It's important to notice that you may not use the same object for play back
+   * and record.<br>
    * 
-   * @param stream
-   *           The random access stream used to read (when playing) or writting (when recording) the data.
+   * @param stream The random access stream used to read (when playing) or
+   *               writting (when recording) the data.
    * @throws IOException
    * @see totalcross.io.RandomAccessStream
    */
   public MediaClip(RandomAccessStream stream) throws IOException {
     try {
+      mediaClipRef = AudioSystem.getClip();
       mediaStream = new Launcher.S2IS(stream);
-      mediaClipRef = new sun.audio.AudioStream(mediaStream);
+      ((Clip) mediaClipRef).open(AudioSystem.getAudioInputStream(mediaStream));
     } catch (java.io.IOException e) {
+      throw new totalcross.io.IOException(e.getMessage());
+    } catch (UnsupportedAudioFileException e) {
+      throw new totalcross.io.IOException(e.getMessage());
+    } catch (LineUnavailableException e) {
       throw new totalcross.io.IOException(e.getMessage());
     }
 
@@ -126,7 +156,7 @@ public class MediaClip {
     if (!Launcher.isApplication) {
       ((java.applet.AudioClip) mediaClipRef).play();
     } else {
-      sun.audio.AudioPlayer.player.start((sun.audio.AudioStream) mediaClipRef);
+      ((Clip) mediaClipRef).start();
     }
     currentState = STARTED;
     mainWindow.broadcastEvent(new MediaClipEvent(MediaClipEvent.STARTED, mainWindow));
@@ -149,7 +179,7 @@ public class MediaClip {
     if (!Launcher.isApplication) {
       ((java.applet.AudioClip) mediaClipRef).stop();
     } else {
-      sun.audio.AudioPlayer.player.stop((sun.audio.AudioStream) mediaClipRef);
+      ((Clip) mediaClipRef).stop();
     }
     currentState = PREFETCHED;
     mainWindow.broadcastEvent(new MediaClipEvent(MediaClipEvent.STOPPED, mainWindow));
@@ -198,7 +228,8 @@ public class MediaClip {
     if (!Launcher.isApplication) {
       ((java.applet.AudioClip) mediaClipRef).stop();
     } else {
-      sun.audio.AudioPlayer.player.stop((sun.audio.AudioStream) mediaClipRef); // guich@582_8
+      ((Clip) mediaClipRef).stop();
+      ((Clip) mediaClipRef).close();
     }
     mediaClipRef = null;
     currentState = CLOSED;

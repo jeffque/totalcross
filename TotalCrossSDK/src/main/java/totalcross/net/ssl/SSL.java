@@ -18,7 +18,6 @@ import javax.net.ssl.SSLPeerUnverifiedException;
 import javax.net.ssl.SSLSession;
 import javax.net.ssl.TrustManager;
 import javax.security.auth.x500.X500Principal;
-import sun.security.validator.ValidatorException;
 import totalcross.crypto.CryptoException;
 import totalcross.io.IOException;
 import totalcross.net.Socket;
@@ -328,8 +327,8 @@ public class SSL {
         // found one trust manager that could verify the peer certificate chain
         return Constants.SSL_OK;
       } catch (SSLPeerUnverifiedException ex) {
-        /* no remote certificate */ } catch (ValidatorException ex) {
-        /* remote certificate is not trusted! */ } catch (CertificateException ex) {
+        /* no remote certificate */ 
+      } catch (CertificateException ex) {
         throw new CryptoException(ex.getMessage());
       }
     }
