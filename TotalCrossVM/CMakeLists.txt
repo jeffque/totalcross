@@ -3,13 +3,26 @@ cmake_minimum_required(VERSION 3.4.1)
 # set the project name
 project(TCVM VERSION 1.0)
 
+# Find SDL2 and OpenGL
+set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules")
+find_package(SDL2 REQUIRED)
+find_package(Skia REQUIRED)
+#find_package(SDL2 REQUIRED COMPONENTS main)
+if(NOT WIN32)
+#    find_package(OpenGL REQUIRED)
+endif()
+
+message(${CMAKE_HOST_SYSTEM})
+
+include_directories(${SDL2_INCLUDE_DIR} ${SKIA_INCLUDE_DIRS})
+
 SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-everything -std=c11 -mmacosx-version-min=10.11")
 SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-everything -std=c++11 -mmacosx-version-min=10.11")
 
 
-set(TC_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../src")
-set(LB_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../src/litebase")
-set(SKIA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../deps/skia")
+set(TC_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
+set(LB_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/src/litebase")
+#set(SKIA_DIR "${CMAKE_CURRENT_SOURCE_DIR}/deps/skia")
 
 
 set(SOURCES
@@ -312,21 +325,21 @@ include_directories(${TC_SRCDIR}/util/android)
 include_directories(${TC_SRCDIR}/zlib)
 include_directories(${TC_SRCDIR}/nm/qrcode)
 
-include_directories(${SKIA_DIR}/android)
-include_directories(${SKIA_DIR}/atlastext)
-include_directories(${SKIA_DIR}/c)
-include_directories(${SKIA_DIR}/codec)
-include_directories(${SKIA_DIR}/config)
-include_directories(${SKIA_DIR}/core)
-include_directories(${SKIA_DIR}/effects)
-include_directories(${SKIA_DIR}/encode)
-include_directories(${SKIA_DIR}/gpu)
-include_directories(${SKIA_DIR}/mac)
-include_directories(${SKIA_DIR}/pathops)
-include_directories(${SKIA_DIR}/ports)
-include_directories(${SKIA_DIR}/private)
-include_directories(${SKIA_DIR}/svg)
-include_directories(${SKIA_DIR}/utils)
+#include_directories(${SKIA_DIR}/android)
+#include_directories(${SKIA_DIR}/atlastext)
+#include_directories(${SKIA_DIR}/c)
+#include_directories(${SKIA_DIR}/codec)
+#include_directories(${SKIA_DIR}/config)
+#include_directories(${SKIA_DIR}/core)
+#include_directories(${SKIA_DIR}/effects)
+#include_directories(${SKIA_DIR}/encode)
+#include_directories(${SKIA_DIR}/gpu)
+#include_directories(${SKIA_DIR}/mac)
+#include_directories(${SKIA_DIR}/pathops)
+#include_directories(${SKIA_DIR}/ports)
+#include_directories(${SKIA_DIR}/private)
+#include_directories(${SKIA_DIR}/svg)
+#include_directories(${SKIA_DIR}/utils)
 
 add_definitions(-DTOTALCROSS -DTC_EXPORTS -DPOSIX -Dlinux -DHEADLESS -DHAVE_MREMAP=0 -fPIC -Wunused-function -Wno-import -fno-strict-aliasing)
 
@@ -334,9 +347,9 @@ IF (APPLE AND CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-DCURRENT_DEBUG_PATH="${CMAKE_CURRENT_BINARY_DIR}")
 ENDIF(APPLE AND CMAKE_BUILD_TYPE MATCHES "Debug")
 
-set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
-find_package(SDL2 REQUIRED)
-include_directories(${SDL2_INCLUDE_DIR})
+#set(CMAKE_MODULE_PATH ${CMAKE_MODULE_PATH} "${PROJECT_SOURCE_DIR}/cmake")
+#find_package(SDL2 REQUIRED)
+
 
 link_directories(${PROJECT_SOURCE_DIR})
 
@@ -345,12 +358,12 @@ link_directories(${PROJECT_SOURCE_DIR})
 add_library(tcvm SHARED ${SOURCES})
 
 target_link_libraries(tcvm ${SDL2_LIBRARY})
-target_link_libraries(tcvm skia)
+target_link_libraries(tcvm ${SKIA_LIBRARIES})
 
 
 
 
-set(TC_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/../../../src")
+set(TC_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 
 include_directories(${TC_SRCDIR}/util)
 
