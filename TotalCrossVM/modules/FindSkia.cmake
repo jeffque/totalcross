@@ -60,31 +60,31 @@ IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
   ENDIF ( )
 
   IF(${CMAKE_SYSTEM_NAME} MATCHES "Linux")
-    PKG_CHECK_MODULES ( FreeType freetype2 )
-    PKG_CHECK_MODULES ( FontConfig fontconfig )
-    FIND_PACKAGE ( OpenGL )
-    FIND_PACKAGE ( Threads )
-    FIND_PACKAGE ( PNG )
-    FIND_PACKAGE ( ZLIB )
-    FIND_PACKAGE ( GIF )
-    LIST ( APPEND SKIA_LIBRARIES
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libetc1.a"
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libSkKTX.a"
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libskflate.a"
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libjpeg.a"
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_enc.a"
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_dec.a"
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_utils.a"
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_dsp.a"
-        "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_demux.a"
-        ${FreeType_LIBRARIES}
-        ${FontConfig_LIBRARIES}
-        ${OPENGL_LIBRARIES}
-        ${PNG_LIBRARIES}
-        ${GIF_LIBRARIES}
-        ${ZLIB_LIBRARIES}
-        ${CMAKE_THREAD_LIBS_INIT}
-    )
+    # PKG_CHECK_MODULES ( FreeType freetype2 )
+    # PKG_CHECK_MODULES ( FontConfig fontconfig )
+    # FIND_PACKAGE ( OpenGL )
+    # FIND_PACKAGE ( Threads )
+    # FIND_PACKAGE ( PNG )
+    # FIND_PACKAGE ( ZLIB )
+    # FIND_PACKAGE ( GIF )
+    # LIST ( APPEND SKIA_LIBRARIES
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libetc1.a"
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libSkKTX.a"
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libskflate.a"
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libjpeg.a"
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_enc.a"
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_dec.a"
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_utils.a"
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_dsp.a"
+        # "${SKIA_LIBRARY_DIRS}/obj/gyp/libwebp_demux.a"
+        # ${FreeType_LIBRARIES}
+        # ${FontConfig_LIBRARIES}
+        # ${OPENGL_LIBRARIES}
+        # ${PNG_LIBRARIES}
+        # ${GIF_LIBRARIES}
+        # ${ZLIB_LIBRARIES}
+        # ${CMAKE_THREAD_LIBS_INIT}
+    # )
     # In Linux, to avoid circular dependency problem, add start-group and end-group for Skia static files.
     SET ( SKIA_LIBRARIES -Wl,--start-group ${SKIA_LIBRARIES} -Wl,--end-group )
   ENDIF ( )
