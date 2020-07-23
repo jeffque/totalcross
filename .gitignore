@@ -65,3 +65,5 @@ TotalCrossVM/builders/gcc-linux-arm/sdl/**/build
 .project
 TotalCrossVM/builders/macos/launcher/build
 TotalCrossVM/builders/macos/tcvm/build
+
+build/
