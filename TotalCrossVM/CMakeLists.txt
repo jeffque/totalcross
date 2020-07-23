@@ -16,8 +16,10 @@ message(${CMAKE_HOST_SYSTEM})
 
 include_directories(${SDL2_INCLUDE_DIR} ${SKIA_INCLUDE_DIRS})
 
-SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-everything -std=c11 -mmacosx-version-min=10.11")
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-everything -std=c++11 -mmacosx-version-min=10.11")
+# SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-everything -std=c11 -mmacosx-version-min=10.11")
+# SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-everything -std=c++11 -mmacosx-version-min=10.11")
+SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-everything")
+SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-everything -std=c++11 ")
 
 
 set(TC_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
@@ -342,7 +344,9 @@ include_directories(${TC_SRCDIR}/nm/qrcode)
 #include_directories(${SKIA_DIR}/svg)
 #include_directories(${SKIA_DIR}/utils)
 
-add_definitions(-DTOTALCROSS -DTC_EXPORTS -DPOSIX -Dlinux -DHEADLESS -DHAVE_MREMAP=0 -fPIC -Wunused-function -Wno-import -fno-strict-aliasing)
+# add_definitions(-DTOTALCROSS -DTC_EXPORTS -DPOSIX -Dlinux -DHEADLESS -DHAVE_MREMAP=0 -fPIC -Wunused-function -Wno-import -fno-strict-aliasing)
+add_definitions(-DTOTALCROSS -lpthread -DFORCE_LIBC_ALLOC -D_REENTRANT -DTC_EXPORTS -DPOSIX -Dlinux -DHEADLESS -DHAVE_MREMAP=0 -fPIC -Wunused-function -Wno-import -fno-strict-aliasing)
+
 
 IF (APPLE AND CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-DCURRENT_DEBUG_PATH="${CMAKE_CURRENT_BINARY_DIR}")
@@ -359,7 +363,8 @@ link_directories(${PROJECT_SOURCE_DIR})
 add_library(tcvm SHARED ${SOURCES})
 
 target_link_libraries(tcvm ${SDL2_LIBRARY})
-target_link_libraries(tcvm ${SKIA_LIBRARIES})
+# target_link_libraries(tcvm ${SKIA_LIBRARIES})
+target_link_libraries(tcvm ${SKIA_LIBRARIES} pthread stdc++ EGL fontconfig)
 
 
 
@@ -370,3 +375,4 @@ include_directories(${TC_SRCDIR}/util)
 
 # add the executable
 add_executable(Launcher ${TC_SRCDIR}/launchers/linux/Launcher.c)
+target_link_libraries(Launcher dl)
