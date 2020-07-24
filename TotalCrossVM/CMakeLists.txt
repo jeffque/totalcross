@@ -363,9 +363,11 @@ link_directories(${PROJECT_SOURCE_DIR})
 add_library(tcvm SHARED ${SOURCES})
 
 target_link_libraries(tcvm ${SDL2_LIBRARY})
-# target_link_libraries(tcvm ${SKIA_LIBRARIES})
-target_link_libraries(tcvm ${SKIA_LIBRARIES} pthread stdc++ EGL fontconfig)
-
+#target_link_libraries(tcvm ${SKIA_LIBRARIES})
+target_link_libraries(tcvm ${SKIA_LIBRARIES} pthread stdc++)
+IF (NOT APPLE AND UNIX)
+  target_link_libraries(tcvm EGL fontconfig)
+ENDIF (NOT APPLE AND UNIX)
 
 
 
