@@ -254,6 +254,7 @@ set(SOURCES
     ${TC_SRCDIR}/nm/qrcode/qrcode.c
 
     ${TC_SRCDIR}/nm/io/device/gpiod/Gpiod.c
+    ${TC_SRCDIR}/nm/io/device/gpiod/posix/gpiodLib.c
 
     ${LB_SRCDIR}/lbFile.c
     ${LB_SRCDIR}/PlainDB.c
