@@ -17,27 +17,32 @@ SET ( SKIA_INCLUDE_DIRS
 #  "${SKIA_SOURCE_DIR}/include/gpu"
 )
 
-IF (APPLE)
+IF (DEFINED ANDROID_ABI)
+  SET ( SKIA_LIBRARY_DIRS "${ANDROID_LIBS_DIR}")
+  SET ( SKIA_LIBRARIES "${SKIA_LIBRARY_DIRS}/${ANDROID_ABI}/libskia.so")
+ELSEIF (APPLE)
   SET ( SKIA_LIBRARY_DIRS "${SKIA_SOURCE_DIR}/out/Release/macos" )
 ELSEIF (UNIX AND (CMAKE_SYSTEM_NAME STREQUAL "Linux"))
   SET ( SKIA_LIBRARY_DIRS "${SKIA_SOURCE_DIR}/out/Release/linux" )
-ENDIF(APPLE)
+ENDIF(DEFINED ANDROID_ABI)
 
 # With skia commit: 7f8c54cefefb855bb0d85d09ce5282ba7e9e352a
-SET ( SKIA_LIBRARIES
-  "${SKIA_LIBRARY_DIRS}/libskia.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_pdf.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_core.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_effects.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_images.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_utils.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_opts.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_opts_ssse3.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_opts_sse4.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_ports.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_sfnt.a"
-#  "${SKIA_LIBRARY_DIRS}/libskia_skgpu.a"
-)
+IF (NOT DEFINED SKIA_LIBRARIES)
+  SET ( SKIA_LIBRARIES
+    "${SKIA_LIBRARY_DIRS}/libskia.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_pdf.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_core.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_effects.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_images.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_utils.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_opts.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_opts_ssse3.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_opts_sse4.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_ports.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_sfnt.a"
+  #  "${SKIA_LIBRARY_DIRS}/libskia_skgpu.a"
+  )
+ENDIF (NOT DEFINED SKIA_LIBRARIES)
 
 IF(${CMAKE_SYSTEM_NAME} MATCHES "Darwin")
     FIND_LIBRARY(ApplicationServices_LIBRARY ApplicationServices )
