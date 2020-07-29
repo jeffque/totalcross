@@ -5,16 +5,19 @@ project(TCVM VERSION 1.0)
 
 # Find SDL2 and OpenGL
 set(CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/modules")
-find_package(SDL2 REQUIRED)
+# Find SDL2
+IF (NOT DEFINED ANDROID_ABI)
+  find_package(SDL2 REQUIRED)
+  include_directories(${SDL2_INCLUDE_DIR})
+ENDIF (NOT DEFINED ANDROID_ABI)
+
+# Find Skia
 find_package(Skia REQUIRED)
+include_directories(${SKIA_INCLUDE_DIRS})
 #find_package(SDL2 REQUIRED COMPONENTS main)
 if(NOT WIN32)
 #    find_package(OpenGL REQUIRED)
 endif()
-
-message(${CMAKE_HOST_SYSTEM})
-
-include_directories(${SDL2_INCLUDE_DIR} ${SKIA_INCLUDE_DIRS})
 
 # SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} -Wno-everything -std=c11 -mmacosx-version-min=10.11")
 # SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} -Wno-everything -std=c++11 -mmacosx-version-min=10.11")
@@ -151,7 +154,6 @@ set(SOURCES
     ${TC_SRCDIR}/nm/sys/Convert.c
 
     ${TC_SRCDIR}/nm/ui/android/skia.cpp
-    ${TC_SRCDIR}/init/tcsdl.cpp
     ${TC_SRCDIR}/nm/ui/gfx_Graphics.c
     ${TC_SRCDIR}/nm/ui/event_Event.c
     ${TC_SRCDIR}/nm/ui/Control.c
@@ -254,7 +256,7 @@ set(SOURCES
     ${TC_SRCDIR}/nm/qrcode/qrcode.c
 
     ${TC_SRCDIR}/nm/io/device/gpiod/Gpiod.c
-    ${TC_SRCDIR}/nm/io/device/gpiod/posix/gpiodLib.c
+    # ${TC_SRCDIR}/nm/io/device/gpiod/posix/gpiodLib.c
 
     ${LB_SRCDIR}/lbFile.c
     ${LB_SRCDIR}/PlainDB.c
@@ -287,6 +289,17 @@ set(SOURCES
     ${LB_SRCDIR}/parser/SQLUpdateStatement.c
     )
 
+IF(DEFINED SDL2_LIBRARY)
+  set(TC_SDL_SOURCES
+    ${TC_SRCDIR}/init/tcsdl.cpp
+  )
+ENDIF(DEFINED SDL2_LIBRARY)
+
+IF(DEFINED ANDROID_ABI)
+  set(TC_ANDROID_SOURCES
+    ${TC_SRCDIR}/nm/money/money.c
+  )
+ENDIF(DEFINED ANDROID_ABI)
 
 include_directories(${TC_SRCDIR})
 include_directories(${TC_SRCDIR}/axtls)
@@ -345,8 +358,15 @@ include_directories(${TC_SRCDIR}/nm/qrcode)
 #include_directories(${SKIA_DIR}/utils)
 
 # add_definitions(-DTOTALCROSS -DTC_EXPORTS -DPOSIX -Dlinux -DHEADLESS -DHAVE_MREMAP=0 -fPIC -Wunused-function -Wno-import -fno-strict-aliasing)
-add_definitions(-DTOTALCROSS -lpthread -DFORCE_LIBC_ALLOC -D_REENTRANT -DTC_EXPORTS -DPOSIX -Dlinux -DHEADLESS -DHAVE_MREMAP=0 -fPIC -Wunused-function -Wno-import -fno-strict-aliasing)
-
+IF(DEFINED ANDROID_ABI)
+  add_definitions(-DANDROID)
+  if ("${ANDROID_ABI}" MATCHES "arm64-v8a")
+	  add_definitions(-DFORCE_LIBC_ALLOC)
+  endif()
+ELSE()
+  add_definitions(-DHEADLESS -Dlinux -lpthread -DFORCE_LIBC_ALLOC -D_REENTRANT -DPOSIX -DHAVE_MREMAP=0 -fPIC -Wunused-function -Wno-import -fno-strict-aliasing)
+ENDIF(DEFINED ANDROID_ABI)
+add_definitions(-DTOTALCROSS -DTC_EXPORTS)
 
 IF (APPLE AND CMAKE_BUILD_TYPE MATCHES "Debug")
   add_definitions(-DCURRENT_DEBUG_PATH="${CMAKE_CURRENT_BINARY_DIR}")
@@ -360,14 +380,62 @@ link_directories(${PROJECT_SOURCE_DIR})
 
 
 # add the library
-add_library(tcvm SHARED ${SOURCES})
+add_library(tcvm SHARED ${SOURCES} ${TC_SDL_SOURCES} ${TC_ANDROID_SOURCES})
 
-target_link_libraries(tcvm ${SDL2_LIBRARY})
-#target_link_libraries(tcvm ${SKIA_LIBRARIES})
-target_link_libraries(tcvm ${SKIA_LIBRARIES} pthread stdc++)
-IF (NOT APPLE AND UNIX)
-  target_link_libraries(tcvm EGL fontconfig)
-ENDIF (NOT APPLE AND UNIX)
+IF(DEFINED SDL2_LIBRARY)
+  target_link_libraries(tcvm ${SDL2_LIBRARY})
+ENDIF(DEFINED SDL2_LIBRARY)
+
+IF (DEFINED ANDROID_ABI)
+  add_library(libskia SHARED IMPORTED)
+  set_target_properties(# Specifies the target library.
+                        libskia
+
+                        # Specifies the parameter you want to define.
+                        PROPERTIES IMPORTED_LOCATION
+
+                        # Provides the path to the library you want to import.
+                        ${SKIA_LIBRARIES}
+                       )
+
+  # Searches for a specified prebuilt library and stores the path as a
+  # variable. Because CMake includes system libraries in the search path by
+  # default, you only need to specify the name of the public NDK library
+  # you want to add. CMake verifies that the library exists before
+  # completing its build.
+  find_library( # Sets the name of the path variable.
+    log-lib
+
+    # Specifies the name of the NDK library that
+    # you want CMake to locate.
+    log 
+  )
+  find_library(# Sets the name of the path variable.
+            jnigraphics-lib
+
+            # Specifies the name of the NDK library that
+            # you want CMake to locate.
+            jnigraphics 
+  )  
+  # Specifies libraries CMake should link to your target library. You
+  # can link multiple libraries, such as libraries you define in this
+  # build script, prebuilt third-party libraries, or system libraries.
+  target_link_libraries(# Specifies the target library.
+                        tcvm
+                        libskia
+                        GLESv2
+                        EGL
+                        android
+                        # Links the target library to the log library
+                        # included in the NDK.
+                        ${log-lib} 
+                        ${jnigraphics-lib} )
+ELSE()
+  target_link_libraries(tcvm ${SKIA_LIBRARIES} pthread stdc++)
+  IF (NOT APPLE AND UNIX)
+    target_link_libraries(tcvm EGL fontconfig)
+  ENDIF(NOT APPLE AND UNIX)
+ENDIF (DEFINED ANDROID_ABI)
 
 
 
