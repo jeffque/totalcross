@@ -5,9 +5,6 @@
       location = "group:TotalCross.xcodeproj">
    </FileRef>
    <FileRef
-      location = "group:tcvm.xcodeproj">
-   </FileRef>
-   <FileRef
       location = "group:../../../LitebaseSDK/builders/xcode/Litebase.xcodeproj">
    </FileRef>
    <FileRef
