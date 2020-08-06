@@ -6,39 +6,40 @@
 # Skia as graphics backend.
 # Together with its dependencies.
 # This should be a custom build from source, put into /opt/build/skia
-SET ( SKIA_SOURCE_DIR ${CMAKE_MODULE_PATH}/skia)
+SET ( SKIA_DIR ${CMAKE_MODULE_PATH}/skia CACHE PATH "Skia directory")
+
+find_path(SKIA_CONFIG_INCLUDE_DIR SkUserConfig.h HINTS "${SKIA_DIR}/include/config")
+find_path(SKIA_CORE_INCLUDE_DIR SkCanvas.h HINTS "${SKIA_DIR}/include/core")
+find_path(SKIA_UTILS_INCLUDE_DIR SkRandom.h HINTS "${SKIA_DIR}/include/utils")
+find_path(SKIA_EFFECTS_INCLUDE_DIR SkImageSource.h HINTS "${SKIA_DIR}/include/effects")
+find_path(SKIA_GPU_INCLUDE_DIR GrContext.h HINTS "${SKIA_DIR}/include/gpu")
+find_path(SKIA_GPU2_INCLUDE_DIR gl/GrGLDefines.h HINTS "${SKIA_DIR}/src/gpu")
 
 SET ( SKIA_INCLUDE_DIRS
-  "${SKIA_SOURCE_DIR}/config"
-  "${SKIA_SOURCE_DIR}/core"
-  "${SKIA_SOURCE_DIR}/images"
-  "${SKIA_SOURCE_DIR}/effects"
-  "${SKIA_SOURCE_DIR}/gpu"
-  "${SKIA_SOURCE_DIR}/utils"
-#  "${SKIA_SOURCE_DIR}/include/config"
-#  "${SKIA_SOURCE_DIR}/include/core"
-#  "${SKIA_SOURCE_DIR}/include/images"
-#  "${SKIA_SOURCE_DIR}/include/effects"
-#  "${SKIA_SOURCE_DIR}/include/gpu"
+  "${SKIA_CONFIG_INCLUDE_DIR}"
+  "${SKIA_CORE_INCLUDE_DIR}"
+  "${SKIA_UTILS_INCLUDE_DIR}"
+  "${SKIA_EFFECTS_INCLUDE_DIR}"
+  "${SKIA_GPU_INCLUDE_DIR}"
+  "${SKIA_GPU2_INCLUDE_DIR}"
 )
 
 IF (DEFINED ANDROID_ABI)
-  SET ( SKIA_LIBRARY_DIRS "${ANDROID_LIBS_DIR}")
-  SET ( SKIA_LIBRARIES "${SKIA_LIBRARY_DIRS}/${ANDROID_ABI}/libskia.so")
+  SET ( SKIA_LIBRARY_DIRS "${ANDROID_LIBS_DIR}" CACHE PATH "")
+  SET ( SKIA_LIBRARIES "${SKIA_LIBRARY_DIRS}/${ANDROID_ABI}/libskia.so" CACHE PATH "")
 ELSEIF (APPLE)
   IF(CMAKE_GENERATOR STREQUAL Xcode)
-    SET ( SKIA_LIBRARY_DIRS "${SKIA_SOURCE_DIR}/out/Release/ios" )
+    SET ( SKIA_LIBRARY_DIRS "${SKIA_DIR}/out/Release/ios" CACHE PATH "")
   ELSE()
-    SET ( SKIA_LIBRARY_DIRS "${SKIA_SOURCE_DIR}/out/Release/macos" )
+    SET ( SKIA_LIBRARY_DIRS "${SKIA_DIR}/out/Release/macos" CACHE PATH "")
   ENDIF(CMAKE_GENERATOR STREQUAL Xcode)
 ELSEIF (UNIX AND (CMAKE_SYSTEM_NAME STREQUAL "Linux"))
-  SET ( SKIA_LIBRARY_DIRS "${SKIA_SOURCE_DIR}/out/Release/linux" )
+  SET ( SKIA_LIBRARY_DIRS "${SKIA_DIR}/out/Release/linux" CACHE PATH "")
 ENDIF(DEFINED ANDROID_ABI)
 
-# With skia commit: 7f8c54cefefb855bb0d85d09ce5282ba7e9e352a
 IF (NOT DEFINED SKIA_LIBRARIES)
   SET ( SKIA_LIBRARIES
-    "${SKIA_LIBRARY_DIRS}/libskia.a"
+    "${SKIA_LIBRARY_DIRS}/libskia.a" CACHE PATH ""
   #  "${SKIA_LIBRARY_DIRS}/libskia_pdf.a"
   #  "${SKIA_LIBRARY_DIRS}/libskia_core.a"
   #  "${SKIA_LIBRARY_DIRS}/libskia_effects.a"
