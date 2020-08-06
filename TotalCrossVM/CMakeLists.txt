@@ -502,6 +502,7 @@ target_compile_options(tcvm
       -mmacosx-version-min=10.11
     >
 )
+# We need to use C++ 11
 target_compile_features(tcvm PUBLIC cxx_std_11)
 
 # XCode Properties
