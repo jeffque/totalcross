@@ -27,20 +27,6 @@ if(NOT MSVC)
   include_directories(${SKIA_INCLUDE_DIRS})
 endif(NOT MSVC)
 
-# Set C/CXX flags
-if(UNIX)
-  set(UNIX_C_FLAGS "-Wall")
-  set(UNIX_CXX_FLAGS "-Wall")
-endif(UNIX)
-
-if(APPLE)
-  set(MACOS_C_FLAGS "-mmacosx-version-min=10.11")
-  set(MACOS_CXX_FLAGS "-mmacosx-version-min=10.11")
-endif(APPLE)
-
-SET(CMAKE_C_FLAGS  "${CMAKE_C_FLAGS} ${UNIX_C_FLAGS} ${MACOS_C_FLAGS}")
-SET(CMAKE_CXX_FLAGS  "${CMAKE_CXX_FLAGS} ${UNIX_CXX_FLAGS} ${MACOS_CXX_FLAGS} -std=c++11")
-
 set(TC_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/src")
 set(LB_SRCDIR "${CMAKE_CURRENT_SOURCE_DIR}/src/litebase")
 
@@ -497,6 +483,26 @@ if(TCVM_SHARED)
 else()
   add_library(tcvm STATIC ${LIBRARY_ARGS})
 endif()
+
+# Set C/CXX flags
+target_compile_options(tcvm
+  PRIVATE
+    $<$<CXX_COMPILER_ID:Gnu>:
+      # g++ warning flags
+      -Wall
+    >
+    $<$<CXX_COMPILER_ID:Clang>:
+      # clang warning flags
+    >
+    $<$<CXX_COMPILER_ID:MSVC>:
+      # MSVC warning flags
+      /W4
+    >
+    $<$<PLATFORM_ID:APPLE>:
+      -mmacosx-version-min=10.11
+    >
+)
+target_compile_features(tcvm PUBLIC cxx_std_11)
 
 # XCode Properties
 if(CMAKE_GENERATOR STREQUAL Xcode)
