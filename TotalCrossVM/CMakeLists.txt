@@ -1,3 +1,8 @@
+# Copyright (C) 2000-2013 SuperWaba Ltda.
+# Copyright (C) 2014-2020 TotalCross Global Mobile Platform Ltda.
+#
+# SPDX-License-Identifier: LGPL-2.1-only
+
 cmake_minimum_required(VERSION 3.13.5)
 
 # set the project name
