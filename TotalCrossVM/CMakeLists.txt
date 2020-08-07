@@ -2,7 +2,7 @@
 #
 # SPDX-License-Identifier: LGPL-2.1-only
 
-cmake_minimum_required(VERSION 3.13.5)
+cmake_minimum_required(VERSION 3.5)
 
 # set the project name
 project(TCVM VERSION 7.0.0)
