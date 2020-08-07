@@ -512,8 +512,15 @@ target_compile_options(tcvm
     >
 )
 # We need to use C++ 11
-target_compile_features(tcvm PUBLIC cxx_std_11)
-
+if(${CMAKE_VERSION} VERSION_LESS "3.8") 
+  set_target_properties(tcvm PROPERTIES
+    CXX_STANDARD 11
+    CXX_STANDARD_REQUIRED YES
+    CXX_EXTENSIONS NO
+  )
+else()
+  target_compile_features(tcvm PUBLIC cxx_std_11)
+endif()
 # XCode Properties
 if(CMAKE_GENERATOR STREQUAL Xcode)
   
