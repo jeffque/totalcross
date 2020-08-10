@@ -510,6 +510,9 @@ target_compile_options(tcvm
     $<$<PLATFORM_ID:APPLE>:
       -mmacosx-version-min=10.11
     >
+    $<$<STREQUAL:"${CMAKE_GENERATOR}","Xcode">:
+      -Wno-everything
+    >
 )
 # We need to use C++ 11
 if(${CMAKE_VERSION} VERSION_LESS "3.8") 
