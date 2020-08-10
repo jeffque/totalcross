@@ -1,16 +1,11 @@
-#!/bin/bash -x
+#!/bin/bash
 BASEDIR=$(dirname $0)
 WORKDIR=$(cd $BASEDIR; pwd)
 
-# reset multi-arch
-sudo docker run --rm --privileged multiarch/qemu-user-static --reset -p yes
+sudo rm -Rf bin
+mkdir build
 
 # execute docker run
-sudo docker run \
--v $WORKDIR:/build \
--v $WORKDIR/../../../deps/skia:/skia \
--v $WORKDIR/../../../src:/src \
--e SRCDIR=/../../../src \
--e LIBS="-L. -lskia -lstdc++ -lpthread -lEGL -lfontconfig -lSDL2main -lSDL2" \
--t totalcross/cross-compile \
-bash -c "make  -j$(($(nproc) + 2)) -f /build/Makefile"
+sudo docker run -v ${WORKDIR}/../docker/arm32v7/build:/build \
+                -v ${WORKDIR}/../:/sources \
+                -t totalcross/linux-arm32v7-build bash -c "cmake ../sources && cmake --build ."
