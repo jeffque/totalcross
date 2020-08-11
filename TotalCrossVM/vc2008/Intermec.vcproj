@@ -41,7 +41,7 @@
 				Name="VCCLCompilerTool"
 				ExecutionBucket="7"
 				Optimization="0"
-				AdditionalIncludeDirectories="..\..\src\util;..\..\src\tcvm;"
+				AdditionalIncludeDirectories="..\src\util;..\src\tcvm;"
 				PreprocessorDefinitions="SCAN_EXPORTS;WINCE;WIN32;_DEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);DEBUG;_WINDOWS;_USRDLL;ARM;_ARM;_UNICODE;UNICODE"
 				MinimalRebuild="true"
 				RuntimeLibrary="1"
@@ -134,7 +134,7 @@
 				ExecutionBucket="7"
 				Optimization="2"
 				FavorSizeOrSpeed="2"
-				AdditionalIncludeDirectories="..\..\src\util;..\..\src\tcvm;"
+				AdditionalIncludeDirectories="..\src\util;..\src\tcvm;"
 				PreprocessorDefinitions="SCAN_EXPORTS;WIN32;NDEBUG;_WIN32_WCE=$(CEVER);UNDER_CE;$(PLATFORMDEFINES);WINCE;_WINDOWS;_USRDLL;INTERMEC_EXPORTS;$(ARCHFAM);$(_ARCHFAM_);_UNICODE;UNICODE"
 				RuntimeLibrary="0"
 				StructMemberAlignment="3"
@@ -210,7 +210,7 @@
 			UniqueIdentifier="{4FC737F1-C7A5-4376-A066-2A32D752A2FF}"
 			>
 			<File
-				RelativePath="..\..\src\scanner\intermec\Intermec_barcode.c"
+				RelativePath="..\src\scanner\intermec\Intermec_barcode.c"
 				>
 			</File>
 		</Filter>
