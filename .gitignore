@@ -44,6 +44,7 @@ BuildLog.htm
 # Xcode
 *.xcuserstate
 Breakpoints.xcbkptlist
+*.nib
 
 # Files from VS Code
 /**/.vs
